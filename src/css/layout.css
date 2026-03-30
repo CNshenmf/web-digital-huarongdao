@@ -1,155 +1,61 @@
-/* 容器样式，统一包裹所有页面 */
-.container {
+/* 布局样式：控制游戏整体布局，居中显示 */
+.game-container {
     width: 100%;
-    max-width: 600px; /* 最大宽度，避免iPad横屏时棋盘过大 */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 30px;
-}
-
-/* 页面标题样式 */
-.page-title {
-    font-size: 28px;
-    color: var(--text-color);
-    text-align: center;
-    margin-bottom: 20px;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 卡通轻微阴影 */
-}
-
-/* 难度选择页布局 */
-.difficulty-page {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 25px;
-}
-
-.difficulty-list {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    width: 80%;
-}
-
-/* 游戏主界面布局 */
-.game-page {
-    width: 100%;
+    max-width: 450px; /* 最大宽度，适配移动端 */
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    padding: 25px;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 20px;
 }
 
-/* 游戏信息栏布局 */
-.game-info {
-    width: 100%;
-    display: flex;
-    justify-content: space-around;
-    font-size: 18px;
-    font-weight: bold;
+.game-title {
+    color: #ff6b8b; /* 卡通粉色标题 */
+    font-size: 28px;
+    text-align: center;
 }
 
-.info-item {
+.game-control {
     display: flex;
-    align-items: center;
-    gap: 8px;
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
-/* 棋盘布局（核心适配） */
 .game-board {
-    width: 90%;
+    width: 100%;
     aspect-ratio: 1/1; /* 正方形棋盘 */
     display: grid;
     gap: 8px;
-    background-color: var(--secondary-color);
+    background-color: #f5f5f5;
     padding: 10px;
-    border-radius: 20px; /* 卡通圆润边框 */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
 }
 
-/* 底部操作栏布局 */
-.game-operation {
-    width: 100%;
+.game-info {
     display: flex;
-    justify-content: space-around;
-    gap: 10px;
-}
-
-/* 弹窗布局（修正z-index，确保本地测试弹窗正常显示） */
-.win-modal, .hint-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.3);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 999; /* 提高层级，避免被遮挡 */
-}
-
-.modal-content, .hint-content {
-    background-color: var(--modal-bg);
-    padding: 30px;
-    border-radius: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-}
-
-.win-info {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    gap: 30px;
     font-size: 18px;
+    color: #666;
 }
 
-.modal-btn-group {
-    display: flex;
-    gap: 15px;
-}
-
-/* 多端适配：媒体查询 */
-/* iPhone/华为手机（竖屏） */
-@media (max-width: 767px) {
-    .difficulty-btn, .oper-btn, .modal-btn {
-        padding: 12px 20px;
-        font-size: 16px;
-    }
-    .game-info {
-        font-size: 16px;
-    }
-    .modal-title {
+/* 适配移动端：调整字体、间距 */
+@media (max-width: 480px) {
+    .game-title {
         font-size: 24px;
     }
-    .win-info {
+    .game-control {
+        gap: 10px;
+    }
+    .game-info {
+        gap: 20px;
         font-size: 16px;
     }
-}
-
-/* iPad（横屏） */
-@media (min-width: 768px) and (orientation: landscape) {
-    .game-info {
-        justify-content: space-between;
-        padding: 0 20px;
-    }
     .game-board {
-        width: 70%;
-    }
-    .difficulty-btn, .oper-btn, .modal-btn {
-        padding: 14px 28px;
-        font-size: 18px;
-    }
-}
-
-/* iPad（竖屏） */
-@media (min-width: 768px) and (orientation: portrait) {
-    .game-board {
-        width: 80%;
+        gap: 6px;
+        padding: 8px;
     }
 }

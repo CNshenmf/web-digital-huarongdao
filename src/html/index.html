@@ -3,69 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>数字华容道（卡通护眼版）</title>
-    <!-- 引入CSS样式（分层引入，按优先级排序） -->
+    <title>卡通护眼版数字华容道</title>
+    <!-- 修复：统一相对路径，确保CSS文件正常加载 -->
     <link rel="stylesheet" href="../css/base.css">
     <link rel="stylesheet" href="../css/layout.css">
     <link rel="stylesheet" href="../css/component.css">
 </head>
 <body>
-    <div class="container">
-        <!-- 难度选择页（默认显示） -->
-        <div class="difficulty-page" id="difficultyPage">
-            <h2 class="page-title">数字华容道</h2>
-            <div class="difficulty-list">
-                <button class="difficulty-btn" data-level="3">3×3 入门级</button>
-                <button class="difficulty-btn" data-level="4">4×4 进阶级</button>
-                <button class="difficulty-btn" data-level="5">5×5 高阶级</button>
-                <button class="difficulty-btn" data-level="6">6×6 挑战级</button>
-            </div>
+    <div class="game-container">
+        <h1 class="game-title">卡通数字华容道</h1>
+        <div class="game-control">
+            <button id="startBtn" class="control-btn">开始游戏</button>
+            <button id="resetBtn" class="control-btn">重置游戏</button>
+            <button id="levelBtn" class="control-btn">切换难度</button>
         </div>
-
-        <!-- 游戏主界面（初始隐藏） -->
-        <div class="game-page" id="gamePage" style="display: none;">
-            <!-- 顶部信息栏：步数、耗时 -->
-            <div class="game-info">
-                <div class="info-item">步数：<span id="stepCount">0</span></div>
-                <div class="info-item">耗时：<span id="timeCount">00:00</span></div>
-            </div>
-            <!-- 棋盘容器（核心区域） -->
-            <div class="game-board" id="gameBoard"></div>
-            <!-- 底部操作栏 -->
-            <div class="game-operation">
-                <button class="oper-btn" id="hintBtn">通关提示</button>
-                <button class="oper-btn" id="resetBtn">重新开始</button>
-                <button class="oper-btn" id="backBtn">返回难度</button>
-            </div>
+        <div class="game-board" id="gameBoard">
+            <!-- 游戏方块由JS动态生成 -->
         </div>
-
-        <!-- 通关弹窗（初始隐藏） -->
-        <div class="win-modal" id="winModal" style="display: none;">
-            <div class="modal-content">
-                <h3 class="modal-title">恭喜通关！🎉</h3>
-                <div class="win-info">
-                    <div>当前步数：<span id="currentStep">0</span></div>
-                    <div>当前耗时：<span id="currentTime">00:00</span></div>
-                    <div>最短步数：<span id="bestStep">--</span></div>
-                    <div>最短耗时：<span id="bestTime">--:--</span></div>
-                </div>
-                <div class="modal-btn-group">
-                    <button class="modal-btn" id="restartSameBtn">再来一局</button>
-                    <button class="modal-btn" id="changeDiffBtn">切换难度</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- 提示弹窗（初始隐藏） -->
-        <div class="hint-modal" id="hintModal" style="display: none;">
-            <div class="hint-content">
-                <span id="hintText"></span>
-                <button class="close-hint" id="closeHintBtn">确定</button>
-            </div>
+        <div class="game-info">
+            <span>步数：<span id="stepCount">0</span></span>
+            <span>难度：<span id="levelText">简单（3x3）</span></span>
         </div>
     </div>
 
-    <!-- 引入JS文件（分层引入，按依赖顺序） -->
+    <!-- 修复：JS加载顺序（工具函数→游戏逻辑→入口文件），确保无依赖报错 -->
     <script src="../js/utils.js"></script>
     <script src="../js/game.js"></script>
     <script src="../js/index.js"></script>

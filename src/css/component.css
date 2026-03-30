@@ -1,108 +1,59 @@
-/* 难度选择按钮样式（卡通风格） */
-.difficulty-btn {
-    padding: 14px 0;
-    background-color: var(--btn-color);
-    color: var(--text-color);
-    font-weight: bold;
-    border-radius: 18px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
-    transition: all 0.2s ease;
+/* 组件样式：按钮、游戏方块样式（卡通风格） */
+/* 控制按钮样式 */
+.control-btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    background-color: #7eb6ff; /* 卡通蓝色 */
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
 }
 
-.difficulty-btn:hover {
-    background-color: var(--btn-hover-color);
-    transform: scale(1.03); /* 轻微缩放，卡通反馈 */
-    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.1);
+.control-btn:hover {
+    background-color: #5a98ff;
+    transform: scale(1.05);
 }
 
-/* 数字块样式（卡通可爱风） */
+.control-btn:active {
+    transform: scale(0.98);
+}
+
+/* 游戏方块样式 */
 .game-block {
-    background-color: var(--block-color);
-    color: var(--block-text-color);
-    border-radius: 12px; /* 圆润边角，卡通风格 */
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    background-color: #ffd966; /* 卡通黄色 */
+    color: #333;
+    font-size: 24px;
+    font-weight: bold;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 20px;
-    font-weight: bold;
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
-    /* 卡通纹理：轻微圆点背景，不影响辨识度 */
-    background-image: radial-gradient(circle, rgba(255,255,255,0.3) 2px, transparent 2px);
-    background-size: 12px 12px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* 空白块样式 */
+/* 空白方块样式 */
 .game-block.empty {
     background-color: transparent;
     box-shadow: none;
-    background-image: none;
     cursor: default;
 }
 
-/* 操作按钮样式 */
-.oper-btn {
-    padding: 12px 24px;
-    background-color: var(--btn-color);
-    color: var(--text-color);
-    font-weight: bold;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+.game-block:hover:not(.empty) {
+    background-color: #ffc800;
+    transform: scale(1.03);
 }
 
-.oper-btn:hover {
-    background-color: var(--btn-hover-color);
-    transform: scale(1.05);
-    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* 弹窗组件样式 */
-.modal-title {
-    font-size: 26px;
-    color: var(--text-color);
-    text-align: center;
-}
-
-.modal-btn {
-    padding: 12px 24px;
-    background-color: var(--btn-color);
-    color: var(--text-color);
-    font-weight: bold;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
-}
-
-.modal-btn:hover {
-    background-color: var(--btn-hover-color);
-    transform: scale(1.05);
-}
-
-/* 提示弹窗样式 */
-.hint-content {
-    width: 80%;
-    max-width: 300px;
-    padding: 20px;
-}
-
-#hintText {
-    font-size: 18px;
-    text-align: center;
-    line-height: 1.5;
-}
-
-.close-hint {
-    padding: 10px 20px;
-    background-color: var(--btn-color);
-    color: var(--text-color);
-    font-weight: bold;
-}
-
-/* 数字块滑动动画 */
-.game-block.move {
-    animation: move 0.2s ease-in-out;
-}
-
-@keyframes move {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-    100% { transform: scale(1); }
+/* 适配移动端：调整按钮、方块大小 */
+@media (max-width: 480px) {
+    .control-btn {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+    .game-block {
+        font-size: 20px;
+    }
 }

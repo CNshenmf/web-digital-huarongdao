@@ -1,134 +1,108 @@
-/**
- * 游戏核心逻辑模块：封装游戏业务逻辑，解耦DOM操作
- * 依赖utils.js工具函数，提供对外暴露的方法供index.js调用
- */
-import { generateOrderArray, shuffleArray, checkWin, getHint, formatTime } from './utils.js';
+// 核心游戏逻辑：全局可访问，修复DOM获取容错，避免开发者模式报错
+let currentLevel = 1; // 当前难度（1-简单3x3，2-中等4x4，3-困难5x5）
+let gameArray = []; // 游戏数字数组
+let stepCount = 0; // 步数统计
+let isPlaying = false; // 是否正在游戏中
 
-// 游戏核心状态（私有变量，不对外暴露）
-let gameState = {
-    level: 3, // 默认难度（3×3）
-    currentArr: [], // 当前数字数组
-    stepCount: 0, // 当前步数
-    timeCount: 0, // 当前耗时（秒）
-    timer: null, // 计时定时器
-    bestStep: {}, // 各难度最短步数（当前会话，不缓存）
-    bestTime: {} // 各难度最短耗时（当前会话，不缓存）
-};
-
-// 1. 游戏初始化：根据难度生成棋盘
-export function initGame(level = 3) {
-    // 重置游戏状态
-    gameState.level = level;
-    gameState.stepCount = 0;
-    gameState.timeCount = 0;
-    clearInterval(gameState.timer);
-
-    // 生成有序数组并打乱
-    const orderArr = generateOrderArray(level);
-    gameState.currentArr = shuffleArray(orderArr, level);
-
-    // 返回当前游戏状态，供index.js渲染DOM
-    return {
-        level: gameState.level,
-        currentArr: gameState.currentArr,
-        stepCount: gameState.stepCount,
-        timeCount: formatTime(gameState.timeCount)
-    };
-}
-
-// 2. 开始计时（修正：直接更新时间，适配本地测试）
-export function startTimer(updateTimeCallback) {
-    gameState.timer = setInterval(() => {
-        gameState.timeCount++;
-        // 回调函数更新DOM，避免定时器回调return无效问题
-        updateTimeCallback(formatTime(gameState.timeCount));
-    }, 1000);
-}
-
-// 3. 停止计时
-export function stopTimer() {
-    clearInterval(gameState.timer);
-}
-
-// 4. 数字块移动逻辑
-export function moveBlock(index) {
-    const { level, currentArr } = gameState;
-    const emptyIndex = currentArr.indexOf(0);
-    const adjacentIndices = getAdjacentIndices(emptyIndex, level);
-
-    // 判断当前点击的数字块是否可移动（是否在空白块相邻位置）
-    if (!adjacentIndices.includes(index)) return false;
-
-    // 交换数字块和空白块位置
-    [currentArr[emptyIndex], currentArr[index]] = [currentArr[index], currentArr[emptyIndex]];
-    gameState.stepCount++; // 步数+1
-
-    // 检查是否通关
-    const isWin = checkWin(currentArr, level);
-    if (isWin) {
-        stopTimer();
-        updateBestRecord(); // 更新最短步数、最短耗时
+// 1. 初始化游戏（创建棋盘、生成数字）- 全局暴露，供index.js调用
+function initGame() {
+    // 修复：添加DOM元素获取容错，避免找不到元素时报错
+    const gameBoard = document.getElementById('gameBoard');
+    const stepCountEl = document.getElementById('stepCount');
+    const levelTextEl = document.getElementById('levelText');
+    
+    // 容错处理：若DOM元素未找到，提示错误并终止执行，避免开发者模式报错
+    if (!gameBoard || !stepCountEl || !levelTextEl) {
+        console.error("错误：未找到游戏相关DOM元素，请检查index.html中元素ID是否正确（gameBoard、stepCount、levelText）");
+        return;
     }
 
-    // 返回移动后的状态，供index.js更新DOM
-    return {
-        currentArr: [...currentArr],
-        stepCount: gameState.stepCount,
-        isWin: isWin,
-        timeCount: formatTime(gameState.timeCount)
-    };
-}
-
-// 辅助函数：获取空白块相邻索引（复用utils.js逻辑，避免重复导入）
-function getAdjacentIndices(index, level) {
-    const indices = [];
-    const row = Math.floor(index / level);
-    const col = index % level;
-    if (row > 0) indices.push(index - level);
-    if (row < level - 1) indices.push(index + level);
-    if (col > 0) indices.push(index - 1);
-    if (col < level - 1) indices.push(index + 1);
-    return indices;
-}
-
-// 5. 更新最短记录（当前会话，不本地缓存）
-function updateBestRecord() {
-    const { level, stepCount, timeCount } = gameState;
-    // 初始化当前难度的最佳记录（若不存在）
-    if (!gameState.bestStep[level]) {
-        gameState.bestStep[level] = stepCount;
-        gameState.bestTime[level] = timeCount;
-    } else {
-        // 更新最短步数（更小则替换）
-        if (stepCount < gameState.bestStep[level]) {
-            gameState.bestStep[level] = stepCount;
+    // 重置步数、更新难度显示
+    stepCount = 0;
+    stepCountEl.textContent = stepCount;
+    levelTextEl.textContent = currentLevel === 1 ? '简单（3x3）' : currentLevel === 2 ? '中等（4x4）' : '困难（5x5）';
+    
+    // 生成随机数组
+    gameArray = generateRandomArray(currentLevel);
+    const size = currentLevel === 1 ? 3 : currentLevel === 2 ? 4 : 5;
+    
+    // 设置棋盘网格（根据难度调整列数）
+    gameBoard.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+    gameBoard.innerHTML = ''; // 清空棋盘
+    
+    // 生成游戏方块
+    gameArray.forEach((num, index) => {
+        const block = document.createElement('div');
+        block.className = `game-block ${num === 0 ? 'empty' : ''}`;
+        block.textContent = num !== 0 ? num : '';
+        block.dataset.index = index; // 存储方块索引，用于后续移动判断
+        
+        // 非空白方块添加点击事件（移动逻辑）
+        if (num !== 0) {
+            block.addEventListener('click', () => moveBlock(index));
         }
-        // 更新最短耗时（更小则替换）
-        if (timeCount < gameState.bestTime[level]) {
-            gameState.bestTime[level] = timeCount;
+        
+        gameBoard.appendChild(block);
+    });
+    
+    isPlaying = true; // 标记游戏开始
+}
+
+// 2. 移动方块逻辑 - 全局暴露
+function moveBlock(blockIndex) {
+    if (!isPlaying) return; // 未开始游戏，不允许移动
+    
+    const size = currentLevel === 1 ? 3 : currentLevel === 2 ? 4 : 5;
+    const emptyIndex = gameArray.indexOf(0);
+    const movableDirections = getMovableDirection(emptyIndex, currentLevel);
+    let canMove = false;
+
+    // 判断当前方块是否可移动（与空白方块相邻）
+    if (movableDirections.includes('up') && emptyIndex - size === blockIndex) canMove = true;
+    if (movableDirections.includes('down') && emptyIndex + size === blockIndex) canMove = true;
+    if (movableDirections.includes('left') && emptyIndex - 1 === blockIndex) canMove = true;
+    if (movableDirections.includes('right') && emptyIndex + 1 === blockIndex) canMove = true;
+    
+    // 可移动则交换方块位置
+    if (canMove) {
+        // 交换数组中数字位置
+        [gameArray[emptyIndex], gameArray[blockIndex]] = [gameArray[blockIndex], gameArray[emptyIndex]];
+        // 更新DOM显示
+        updateGameBoard();
+        // 步数+1
+        stepCount++;
+        document.getElementById('stepCount').textContent = stepCount;
+        // 检查是否胜利
+        if (checkWin(gameArray)) {
+            isPlaying = false;
+            setTimeout(() => {
+                alert(`恭喜胜利！步数：${stepCount} 步🎉`);
+            }, 300);
         }
     }
 }
 
-// 6. 获取通关提示
-export function getGameHint() {
-    return getHint(gameState.currentArr, gameState.level);
+// 3. 更新棋盘DOM显示（移动后刷新方块位置）- 全局暴露
+function updateGameBoard() {
+    const blocks = document.querySelectorAll('.game-block');
+    // 容错处理：若未找到方块元素，提示错误
+    if (!blocks.length) {
+        console.error("错误：未找到游戏方块元素，请检查game.js中initGame函数是否正常执行");
+        return;
+    }
+    gameArray.forEach((num, index) => {
+        blocks[index].className = `game-block ${num === 0 ? 'empty' : ''}`;
+        blocks[index].textContent = num !== 0 ? num : '';
+    });
 }
 
-// 7. 获取当前难度的最佳记录
-export function getBestRecord() {
-    const { level, bestStep, bestTime } = gameState;
-    return {
-        bestStep: bestStep[level] || '--',
-        bestTime: bestTime[level] ? formatTime(bestTime[level]) : '--:--'
-    };
+// 4. 重置游戏 - 全局暴露
+function resetGame() {
+    initGame();
 }
 
-// 8. 获取当前游戏状态（供index.js使用）
-export function getCurrentGameState() {
-    return {
-        level: gameState.level,
-        stepCount: gameState.stepCount,
-        timeCount: formatTime(gameState.timeCount)
-    };
+// 5. 切换难度（1→2→3→1循环）- 全局暴露
+function switchLevel() {
+    currentLevel = currentLevel === 3 ? 1 : currentLevel + 1;
+    initGame();
 }
