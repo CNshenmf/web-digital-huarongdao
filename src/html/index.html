@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数字华容道（卡通护眼版）</title>
+    <!-- 引入CSS样式（分层引入，按优先级排序） -->
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/component.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 难度选择页（默认显示） -->
+        <div class="difficulty-page" id="difficultyPage">
+            <h2 class="page-title">数字华容道</h2>
+            <div class="difficulty-list">
+                <button class="difficulty-btn" data-level="3">3×3 入门级</button>
+                <button class="difficulty-btn" data-level="4">4×4 进阶级</button>
+                <button class="difficulty-btn" data-level="5">5×5 高阶级</button>
+                <button class="difficulty-btn" data-level="6">6×6 挑战级</button>
+            </div>
+        </div>
+
+        <!-- 游戏主界面（初始隐藏） -->
+        <div class="game-page" id="gamePage" style="display: none;">
+            <!-- 顶部信息栏：步数、耗时 -->
+            <div class="game-info">
+                <div class="info-item">步数：<span id="stepCount">0</span></div>
+                <div class="info-item">耗时：<span id="timeCount">00:00</span></div>
+            </div>
+            <!-- 棋盘容器（核心区域） -->
+            <div class="game-board" id="gameBoard"></div>
+            <!-- 底部操作栏 -->
+            <div class="game-operation">
+                <button class="oper-btn" id="hintBtn">通关提示</button>
+                <button class="oper-btn" id="resetBtn">重新开始</button>
+                <button class="oper-btn" id="backBtn">返回难度</button>
+            </div>
+        </div>
+
+        <!-- 通关弹窗（初始隐藏） -->
+        <div class="win-modal" id="winModal" style="display: none;">
+            <div class="modal-content">
+                <h3 class="modal-title">恭喜通关！🎉</h3>
+                <div class="win-info">
+                    <div>当前步数：<span id="currentStep">0</span></div>
+                    <div>当前耗时：<span id="currentTime">00:00</span></div>
+                    <div>最短步数：<span id="bestStep">--</span></div>
+                    <div>最短耗时：<span id="bestTime">--:--</span></div>
+                </div>
+                <div class="modal-btn-group">
+                    <button class="modal-btn" id="restartSameBtn">再来一局</button>
+                    <button class="modal-btn" id="changeDiffBtn">切换难度</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 提示弹窗（初始隐藏） -->
+        <div class="hint-modal" id="hintModal" style="display: none;">
+            <div class="hint-content">
+                <span id="hintText"></span>
+                <button class="close-hint" id="closeHintBtn">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 引入JS文件（分层引入，按依赖顺序） -->
+    <script src="../js/utils.js"></script>
+    <script src="../js/game.js"></script>
+    <script src="../js/index.js"></script>
+</body>
+</html>
